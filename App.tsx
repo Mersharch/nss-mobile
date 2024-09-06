@@ -1,20 +1,31 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+
+import {
+  MD3LightTheme as DefaultTheme,
+  PaperProvider,
+} from "react-native-paper";
+import Colors from "./src/constants/colors";
+import { StatusBar } from "expo-status-bar";
+import RootNavigation from "./src/navigation/RootNavigation";
+import { useFonts } from "expo-font";
 
 export default function App() {
+  const theme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: Colors.primary,
+      secondary: Colors.secondary,
+    },
+  };
+
+  const [fontsLoaded] = useFonts({
+    Inter: require("./assets/fonts/Inter-4.0/InterVariable.ttf"),
+  });
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+    <PaperProvider theme={theme}>
       <StatusBar style="auto" />
-    </View>
+      <RootNavigation />
+    </PaperProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
