@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useEffect } from "react";
 import NLogo from "@assets/images/Logo.png";
 import Animated, {
@@ -7,28 +7,59 @@ import Animated, {
   withSequence,
   withTiming,
   Easing,
-  withRepeat,
+  runOnJS,
 } from "react-native-reanimated";
 
-const SplashScreen = () => {
+const SplashScreen = ({ callback }: { callback: () => void }) => {
+  const translateY = useSharedValue(-200); // Start above the screen
   const rotation = useSharedValue(0);
 
+  const logFinished = () => {
+    return callback();
+  };
+
   useEffect(() => {
-    rotation.value = withRepeat(
-      withSequence(
-        withTiming(90, { duration: 1000, easing: Easing.inOut(Easing.quad) }),
-        withTiming(-90, { duration: 2000, easing: Easing.inOut(Easing.quad) }),
-        withTiming(90, { duration: 2000, easing: Easing.inOut(Easing.quad) }),
-        withTiming(0, { duration: 1000, easing: Easing.inOut(Easing.quad) })
-      ),
-      -1,
-      true
+    const dropDuration = 1000;
+    const rotationDuration = 6000; // Total duration of one rotation sequence
+
+    translateY.value = withTiming(
+      0,
+      {
+        duration: dropDuration,
+        easing: Easing.bounce,
+      },
+      () => {
+        // Start rotation after drop is complete
+        rotation.value = withSequence(
+          withTiming(90, { duration: 1000, easing: Easing.inOut(Easing.quad) }),
+          withTiming(-90, {
+            duration: 2000,
+            easing: Easing.inOut(Easing.quad),
+          }),
+          withTiming(90, { duration: 2000, easing: Easing.inOut(Easing.quad) }),
+          withTiming(
+            0,
+            {
+              duration: 1000,
+              easing: Easing.inOut(Easing.quad),
+            },
+            (finished) => {
+              if (finished) {
+                runOnJS(logFinished)();
+              }
+            }
+          )
+        );
+      }
     );
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${rotation.value}deg` }],
+      transform: [
+        { translateY: translateY.value },
+        { rotate: `${rotation.value}deg` },
+      ],
     };
   });
 
@@ -51,6 +82,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 120,
     height: 120,
-    borderRadius: 100,
+    borderRadius: 60,
   },
 });

@@ -5,15 +5,22 @@ import {
 import Colors from "./src/constants/colors";
 import { StatusBar } from "expo-status-bar";
 import RootNavigation from "./src/navigation/RootNavigation";
-import { useFonts } from "expo-font";
+import {
+  Inter_900Black,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_400Regular,
+} from "@expo-google-fonts/inter";
 import * as Splash from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import SplashScreen from "@screens/SplashScreen";
+import { useFonts } from "expo-font";
 
 Splash.preventAutoHideAsync();
 
 export default function App() {
   const [appReady, setAppReady] = useState(false);
+  const [animationFinished, setAnimationFinished] = useState(false);
   const theme = {
     ...DefaultTheme,
     colors: {
@@ -24,30 +31,21 @@ export default function App() {
   };
 
   const [fontsLoaded, fontError] = useFonts({
-    Inter: require("./assets/fonts/Inter-4.0/InterVariable.ttf"),
+    Inter: Inter_400Regular,
+    InterSemi: Inter_600SemiBold,
+    InterBold: Inter_700Bold,
+    InterBlack: Inter_900Black,
   });
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
       Splash.hideAsync();
-      // set timeout for 3 seconds then set appready to true
-      setTimeout(() => {
-        setAppReady(true);
-      }, 3000);
+      setAppReady(true);
     }
   }, [fontsLoaded, fontError]);
 
-  if (!appReady) {
-    return (
-      // <AnimatedSplashScreen
-      //   onAnimationFinish={(isCancelled) => {
-      //     if (!isCancelled) {
-      //       setSplashAnimationFinished(true);
-      //     }
-      //   }}
-      // />
-      <SplashScreen />
-    );
+  if (!appReady || !animationFinished) {
+    return <SplashScreen callback={() => setAnimationFinished(true)} />;
   }
 
   return (
