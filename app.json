@@ -23,11 +23,18 @@
     },
     "plugins": [
       [
-        "expo-font", 
+        "expo-font",
         {
-        "fonts": ["./assets/fonts/Inter-4.0/InterVariable.ttf"]
+          "fonts": [
+            "./assets/fonts/Inter-4.0/InterVariable.ttf"
+          ]
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d6dc5d51-130e-4eac-aaed-6d77c6fa4252"
       }
-    ]
-    ]
+    }
   }
 }
